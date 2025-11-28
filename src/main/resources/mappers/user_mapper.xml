@@ -84,5 +84,14 @@
         where
             ut.user_id = #{userId};
     </select>
+    <update id="updatePassword">
+        update
+            user_tb
+        set
+            password = #{password},
+            update_dt = now()
+        where
+            user_id = #{userId};
+    </update>
 
 </mapper>
