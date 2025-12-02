@@ -27,6 +27,9 @@ public class UserRepository {
         }
         return Optional.of(user);
     }
+    public Optional<User> getUserByEmail(String email){
+        return userMapper.getUserByEmail(email);
+    }
     public int updatePassword(User user){
     return userMapper.updatePassword(user);
     }

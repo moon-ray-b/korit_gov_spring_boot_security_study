@@ -1,6 +1,8 @@
 package com.korit.security2_study.config;
 
 import com.korit.security2_study.security.filter.JwtAuthenticationFilter;
+import com.korit.security2_study.security.handler.OAuth2SuccessHandler;
+import com.korit.security2_study.service.OAuth2PrincipalService;
 import jakarta.websocket.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +19,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig {
+
+    @Autowired
+    private OAuth2PrincipalService oAuth2PrincipalService;
+
+    @Autowired
+    private OAuth2SuccessHandler oAuth2SuccessHandler;
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -74,9 +82,20 @@ public class SecurityConfig {
 
         //특정 욮청 URL에 대한 권한 설정
         http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers("/auth/signup", "/auth/signin").permitAll();
+            auth.requestMatchers("/auth/signup", "/auth/signin","/login/oauth2/**","/oauth2/**").permitAll();
             auth.anyRequest().authenticated();
         });
+        //요청이 들어오면 Spring Security의 filterChain을 탄다
+        //여기서 여러 필터 중 하나가 oauth2 요청을 감지
+        //감지되면 해당 provider의 로그인 페이지로 리디렉션함
+        http.oauth2Login(oauth2->
+                //OAuth2 로그인 요청이 성공하고 사용자 정보를 가져오는 과정을 설정
+                oauth2.userInfoEndpoint(userInfo->
+                        //userservice 사용자 정보 요청이 완료가 되면 이 커스텀 서비스로 OAuth2User 객체에 대한 처리를 하겠다고 설정
+                        userInfo.userService(oAuth2PrincipalService))
+                        //사용자 정보 파싱이 끝난 후 실행할 핸들러 설정
+                        .successHandler(oAuth2SuccessHandler)
+                );
 
         return http.build();
     }
