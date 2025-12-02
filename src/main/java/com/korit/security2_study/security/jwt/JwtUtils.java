@@ -26,6 +26,15 @@ public class JwtUtils {
                 .signWith(Key)
                 .compact();
     }
+
+    public String generateVerifyToken(String id){
+        return Jwts.builder()
+                .subject("VerifyToken")
+                .id(id)
+                .expiration(new Date(new Date().getTime()+(1000L * 60 * 3L)))
+                .signWith(Key)
+                .compact();
+    }
     //Claims: JWT의 Payload 영여그 즉 사용자 정보 , 만료일자 등등
     //JwtException: 토큰이 잘못되어있을 경우(위변조, 만료 등) 발생하는 예외
     public Claims getclaims(String token)throws JwtException {

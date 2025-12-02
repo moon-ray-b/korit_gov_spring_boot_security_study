@@ -82,7 +82,7 @@ public class SecurityConfig {
 
         //특정 욮청 URL에 대한 권한 설정
         http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers("/auth/signup", "/auth/signin","/login/oauth2/**","/oauth2/**").permitAll();
+            auth.requestMatchers("/auth/signup", "/auth/signin","/login/oauth2/**","/oauth2/**", "/mail/verify").permitAll();
             auth.anyRequest().authenticated();
         });
         //요청이 들어오면 Spring Security의 filterChain을 탄다
